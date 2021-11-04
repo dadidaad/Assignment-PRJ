@@ -177,7 +177,7 @@
                                     <td>Số lượng mua</td>
                                     <td>Thời gian mua</td>
                                 </tr>
-                                <c:forEach items="${hbDAO.allItems}" var="item">
+                                <c:forEach items="${hbDAO.allItem}" var="item">
                                     <tr>
                                         <td>${item.getUsername()}</td>
                                         <td>${pDAO.getProductMaterialByID(item.getProductWithMaterialID()).getProductName()}</td>

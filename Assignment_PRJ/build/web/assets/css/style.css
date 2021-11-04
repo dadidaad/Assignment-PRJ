@@ -465,7 +465,7 @@ h6 {
 # Sections General
 --------------------------------------------------------------*/
 section {
-  padding: 30px 0;
+  padding: 15px 0;
   overflow: hidden;
 }
 
@@ -1536,9 +1536,13 @@ span.psw {
   float: right;
 }
 #Store-content {
-  margin-top: 10px;
+  margin-top: 5px;
 }
 #Store-content .left-side {
+  display: flex;
+  flex-direction: column;
+}
+#Store-content .left-side .left-side-top {
   background: linear-gradient(
     90deg,
     rgba(2, 0, 36, 1) 0%,
@@ -1547,11 +1551,40 @@ span.psw {
   );
   font-size: 1.6em;
 }
-#Store-content .left-side ul {
+#Store-content .left-side .left-side-top ul {
   list-style: none;
 }
-#Store-content .left-side ul li {
+#Store-content .left-side .left-side-top ul li {
   color: white;
+}
+#Store-content .left-side .left-side-bottom {
+  margin-top: 10px;
+  background-color: #ecf0f1;
+}
+#Store-content .left-side .left-side-bottom .product-item {
+  flex: 1 1 100%;
+  max-width: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column-reverse;
+  width: 100%;
+  text-align: center;
+}
+#Store-content .left-side .left-side-bottom .product-item .product-title h3 {
+  color: #e74c3c;
+}
+#Store-content .left-side .left-side-bottom .product-item .product-img {
+  width: 100%;
+  height: 250px;
+}
+#Store-content .left-side .left-side-bottom .product-item .product-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+#Store-content .left-side .left-side-bottom .product-item .product-option {
+  align-items: flex-end;
 }
 #Store_hero .container {
   position: relative;
@@ -1577,7 +1610,13 @@ span.psw {
   outline: none;
 }
 .active1 {
-  background-color: rgb(20, 20, 20);
+  background: linear-gradient(to bottom, #323232 0%, #3f3f3f 40%, #1c1c1c 150%),
+    linear-gradient(
+      to top,
+      rgba(255, 255, 255, 0.4) 0%,
+      rgba(0, 0, 0, 0.25) 200%
+    );
+  background-blend-mode: multiply;
   color: rgb(232, 245, 119);
 }
 .dropdown-container {
@@ -2076,7 +2115,7 @@ input[type="number"]::-webkit-outer-spin-button {
   display: block;
   height: 600px;
   overflow: auto;
-  display:none;
+  display: none;
 }
 .content-dashboard form input[type="text"] {
   width: 100%;

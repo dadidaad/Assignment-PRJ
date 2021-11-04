@@ -43,7 +43,7 @@ public class HistoryBuyDAO extends BaseDAO<Object> {
     public ArrayList<ItemHistoryBuy> getItemByUsername(String username) {
         String sql = "SELECT *\n"
                 + "FROM dbo.HistoryBuy\n"
-                + "WHERE dbo.HistoryBuy.Username = ?";
+                + "WHERE dbo.HistoryBuy.Username = ? ORDER BY DateBuy DESC";
         ArrayList<ItemHistoryBuy> listItem = new ArrayList<>();
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
@@ -62,7 +62,27 @@ public class HistoryBuyDAO extends BaseDAO<Object> {
         }
         return listItem;
     }
-
+    public ArrayList<ItemHistoryBuy> getAllItem() {
+        String sql = "SELECT *\n"
+                + "FROM dbo.HistoryBuy\n"
+                + "ORDER BY DateBuy DESC";
+        ArrayList<ItemHistoryBuy> listItem = new ArrayList<>();
+        try {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                ItemHistoryBuy item = new ItemHistoryBuy();
+                item.setUsername(rs.getString("Username"));
+                item.setProductWithMaterialID(rs.getString("ProductWithMaterialID"));
+                item.setDateBuy(rs.getTimestamp("DateBuy"));
+                item.setQuantity(rs.getInt("Quantity"));
+                listItem.add(item);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(HistoryBuyDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return listItem;
+    }
     public int getRecordOfItems() {
         String sql = "SELECT COUNT(*) AS total\n"
                 + "FROM dbo.HistoryBuy";

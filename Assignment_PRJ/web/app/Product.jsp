@@ -16,7 +16,7 @@
         <jsp:useBean id="product" class="dao.ProductDAO" scope="request"></jsp:useBean>
         </head>
         <body>
-        <c:set var="perPage" value ="${6}"/>
+        <c:set var="perPage" value ="${3}"/>
         <c:if test="${param.page eq null or param.page le 0}">
             <c:set var="currentPage" value ="${1}"/>
         </c:if>

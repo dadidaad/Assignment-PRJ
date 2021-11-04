@@ -306,13 +306,12 @@ public class ProductDAO extends BaseDAO<Object> {
             PreparedStatement ps = connection.prepareStatement(sql);
             ps.setString(1, idProduct);
             ResultSet rs = ps.executeQuery();
-            if(!rs.next()){
+            if (!rs.next()) {
                 sql = "DELETE FROM dbo.Product WHERE dbo.Product.ProductID = ?";
                 PreparedStatement ps1 = connection.prepareStatement(sql);
                 ps1.setString(1, idProduct);
                 result = ps1.executeUpdate();
-            }
-            else{
+            } else {
                 return 1;
             }
         } catch (SQLException ex) {
@@ -373,8 +372,7 @@ public class ProductDAO extends BaseDAO<Object> {
                 ps.setString(2, desc);
                 ps.setInt(3, brandID);
                 result = ps.executeUpdate();
-            }
-            else{
+            } else {
                 return 0;
             }
         } catch (SQLException ex) {
@@ -410,9 +408,45 @@ public class ProductDAO extends BaseDAO<Object> {
         return result;
     }
 
+    public ProductWithMaterial getHottestProduct() {
+        String sql = "WITH R AS\n"
+                + "(\n"
+                + "	SELECT dbo.HistoryBuy.ProductWithMaterialID, SUM(dbo.HistoryBuy.Quantity) AS 'Quantity'\n"
+                + "	FROM dbo.HistoryBuy\n"
+                + "	GROUP BY dbo.HistoryBuy.ProductWithMaterialID\n"
+                + ")\n"
+                + "SELECT TOP 1 dbo.ProductWithMaterial.*, R1.Quantity, dbo.Product.* , dbo.Material.MaterialName\n"
+                + "FROM (R R1 INNER JOIN (dbo.ProductWithMaterial INNER JOIN dbo.Material ON dbo.ProductWithMaterial.MaterialID = dbo.Material.MaterialID) ON R1.ProductWithMaterialID = dbo.ProductWithMaterial.ProductWithMaterialID) INNER JOIN dbo.Product ON dbo.ProductWithMaterial.ProductID = dbo.Product.ProductID\n"
+                + "WHERE NOT EXISTS ( SELECT Quantity FROM R R2 WHERE R1.Quantity < R2.Quantity)";
+        try {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            ProductWithMaterial x = new ProductWithMaterial();
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                x.setProductWithMaterialID(rs.getString("ProductWithMaterialID"));
+                x.setProductID(rs.getString("ProductID"));
+                x.setDescription(rs.getString("Description"));
+                x.setBase64Image(dh.convertToBase64(rs.getBlob("ImageProduct")));
+                x.setProductPrice(rs.getString("ProductPrice"));
+                x.setProductName(rs.getString("ProductName"));
+                Material material = new Material();
+                material.setMaterialID(rs.getString("MaterialID"));
+                material.setMaterialName(rs.getString("MaterialName"));
+                x.setMaterial(material);
+                Brand brand = new Brand();
+                brand.setBrandID(rs.getString("BrandID"));
+                x.setBrand(brand);
+            }
+            return x;
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
     public static void main(String[] args) {
         ProductDAO db = new ProductDAO();
-        System.out.println(db.insertProduct("Võng xe Airblade", "....", 1));
+        System.out.println(db.getHottestProduct().getProductName());
 
     }
 }
