@@ -6,10 +6,10 @@ package model;
  */
 public class ProductWithMaterial extends Product{
     String ProductWithMaterialID;
-    String imgSrc;
     String ProductPrice;
     Material material;
-
+    Object productImg;
+    String base64Image;
     public String getProductWithMaterialID() {
         return ProductWithMaterialID;
     }
@@ -18,13 +18,23 @@ public class ProductWithMaterial extends Product{
         this.ProductWithMaterialID = ProductWithMaterialID;
     }
 
-    public String getImgSrc() {
-        return imgSrc;
+    public Object getProductImg() {
+        return productImg;
     }
 
-    public void setImgSrc(String imgSrc) {
-        this.imgSrc = imgSrc;
+    public void setProductImg(Object productImg) {
+        this.productImg = productImg;
     }
+
+    public String getBase64Image() {
+        return base64Image;
+    }
+
+    public void setBase64Image(String base64Image) {
+        this.base64Image = base64Image;
+    }
+
+   
     public String getProductPrice() {
         if(ProductPrice.contains(".")){
             return ProductPrice.substring(0, ProductPrice.indexOf("."));

@@ -1,21 +1,27 @@
 package dao;
 
+import java.io.IOException;
+import java.sql.Blob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.http.Part;
 import model.Brand;
 import model.Material;
 import model.Product;
 import model.ProductWithMaterial;
+import utils.DataHandle;
 
 /**
  *
  * @author Admin
  */
 public class ProductDAO extends BaseDAO<Object> {
+
+    DataHandle dh = new DataHandle();
 
     public ArrayList<Product> getAllProducts(int pageIndex, int pageSize) {
         ArrayList<Product> listProduct = new ArrayList<>();
@@ -175,7 +181,9 @@ public class ProductDAO extends BaseDAO<Object> {
                 ProductWithMaterial productMaterial = new ProductWithMaterial();
                 productMaterial.setProductWithMaterialID(rs.getString("ProductWithMaterialID"));
                 productMaterial.setProductID(rs.getString("ProductID"));
-                productMaterial.setImgSrc(rs.getString("ImageProduct"));
+                Blob blob = rs.getBlob("ImageProduct");
+                String imageBase64 = dh.convertToBase64(blob);
+                productMaterial.setBase64Image(imageBase64);
                 productMaterial.setProductPrice(rs.getString("ProductPrice"));
                 Material material = new Material();
                 material.setMaterialID(rs.getString("MaterialID"));
@@ -203,7 +211,9 @@ public class ProductDAO extends BaseDAO<Object> {
                 productMaterial.setProductID(rs.getString("ProductID"));
                 productMaterial.setDescription(rs.getString("Description"));
                 productMaterial.setProductName(rs.getString("ProductName"));
-                productMaterial.setImgSrc(rs.getString("ImageProduct"));
+                Blob blob = rs.getBlob("ImageProduct");
+                String imageBase64 = dh.convertToBase64(blob);
+                productMaterial.setBase64Image(imageBase64);
                 productMaterial.setProductPrice(rs.getString("ProductPrice"));
                 Material material = new Material();
                 material.setMaterialID(rs.getString("MaterialID"));
@@ -231,7 +241,9 @@ public class ProductDAO extends BaseDAO<Object> {
                 x = new ProductWithMaterial();
                 x.setProductWithMaterialID(rs.getString("ProductWithMaterialID"));
                 x.setProductID(rs.getString("ProductID"));
-                x.setImgSrc(rs.getString("ImageProduct"));
+                Blob blob = rs.getBlob("ImageProduct");
+                String imageBase64 = dh.convertToBase64(blob);
+                x.setBase64Image(imageBase64);
                 x.setProductPrice(rs.getString("ProductPrice"));
                 x.setProductName(rs.getString("ProductName"));
                 x.setDescription(rs.getString("Description"));
@@ -268,12 +280,12 @@ public class ProductDAO extends BaseDAO<Object> {
         String sql = "SELECT TOP 1 dbo.Product.ProductID\n"
                 + "FROM dbo.Product\n"
                 + "WHERE dbo.Product.ProductName = ?";
-        String id="";
-        try{
+        String id = "";
+        try {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, name);
             ResultSet rs = statement.executeQuery();
-            while(rs.next()){
+            while (rs.next()) {
                 id = rs.getString("ProductID");
             }
         } catch (SQLException ex) {
@@ -282,30 +294,45 @@ public class ProductDAO extends BaseDAO<Object> {
         return Integer.parseInt(id);
     }
 
-    public int deleteProductWithMaterial(String id) {
+    public int deleteProductWithMaterial(String idProduct, String idProductWithMaterial) {
         String sql = "DELETE FROM dbo.ProductWithMaterial\n"
                 + "WHERE dbo.ProductWithMaterial.ProductWithMaterialID = ?";
         int result = 0;
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1, id);
+            statement.setString(1, idProductWithMaterial);
             result = statement.executeUpdate();
+            sql = "SELECT * FROM dbo.ProductWithMaterial WHERE dbo.ProductWithMaterial.ProductID  = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, idProduct);
+            ResultSet rs = ps.executeQuery();
+            if(!rs.next()){
+                sql = "DELETE FROM dbo.Product WHERE dbo.Product.ProductID = ?";
+                PreparedStatement ps1 = connection.prepareStatement(sql);
+                ps1.setString(1, idProduct);
+                result = ps1.executeUpdate();
+            }
+            else{
+                return 1;
+            }
         } catch (SQLException ex) {
             Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return result;
     }
 
-    public int updateProductWithMaterial(String id, String price, String imgSrc) {
+    public int updateProductWithMaterial(String id, String price, Part imgSrc) {
         String sql = "UPDATE dbo.ProductWithMaterial SET ImageProduct = ?, ProductPrice = ? WHERE ProductWithMaterialID = ?";
         int result = 0;
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1, imgSrc);
+            statement.setBlob(1, imgSrc.getInputStream());
             statement.setString(2, price);
             statement.setString(3, id);
             result = statement.executeUpdate();
         } catch (SQLException ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
             Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return result;
@@ -326,47 +353,58 @@ public class ProductDAO extends BaseDAO<Object> {
     }
 
     public int insertProduct(String name, String desc, int brandID) {
-        String sql = "INSERT INTO dbo.Product ("
-                + "	ProductName,"
-                + "	Description,"
-                + "	BrandID"
-                + ") VALUES ( "
-                + "	 ?,"
-                + "	 ?,"
-                + "	?) ";
+        String sql = "SELECT * FROM dbo.Product WHERE ProductName  = ?";
         int result = 0;
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, name);
-            statement.setString(2, desc);
-            statement.setInt(3, brandID);
-            result = statement.executeUpdate();
+            ResultSet rs = statement.executeQuery();
+            if (!rs.next()) {
+                sql = "INSERT INTO dbo.Product (\n"
+                        + "	ProductName,\n"
+                        + "	Description,\n"
+                        + "	BrandID\n"
+                        + ") VALUES ( \n"
+                        + "	?,\n"
+                        + "	 ?,\n"
+                        + "	? ) ";
+                PreparedStatement ps = connection.prepareStatement(sql);
+                ps.setString(1, name);
+                ps.setString(2, desc);
+                ps.setInt(3, brandID);
+                result = ps.executeUpdate();
+            }
+            else{
+                return 0;
+            }
         } catch (SQLException ex) {
             Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return result;
     }
 
-    public int insertProductWithMaterial(int idProduct, String imgSrc, String productPrice, int MaterialID) {
+    public int insertProductWithMaterial(int idProduct, Part imgSrc, String productPrice, int MaterialID) {
         String sql = "INSERT INTO dbo.ProductWithMaterial (\n"
                 + "	ProductID,\n"
                 + "	ImageProduct,\n"
                 + "	ProductPrice,\n"
                 + "	MaterialID\n"
                 + ") VALUES ( \n"
-                + "	/* ProductID - int */ ?,\n"
-                + "	/* ImageProduct - nvarchar(255) */ ?,\n"
-                + "	/* ProductPrice - money */ ?,\n"
-                + "	/* MaterialID - int */ ? )  ";
+                + "	?,\n"
+                + "	?,\n"
+                + "	?,\n"
+                + "	? ) ";
         int result = 0;
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1, idProduct);
-            statement.setString(2, imgSrc);
+            statement.setBlob(2, imgSrc.getInputStream());
             statement.setString(3, productPrice);
             statement.setInt(4, MaterialID);
             result = statement.executeUpdate();
         } catch (SQLException ex) {
+            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
             Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return result;
@@ -374,6 +412,7 @@ public class ProductDAO extends BaseDAO<Object> {
 
     public static void main(String[] args) {
         ProductDAO db = new ProductDAO();
-        System.out.println(db.insertProductWithMaterial(1, "hello", "10000", 1));
+        System.out.println(db.insertProduct("Võng xe Airblade", "....", 1));
+
     }
 }

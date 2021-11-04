@@ -71,8 +71,8 @@
                             <h3> Thêm sản phẩm</h3>
                             <p class="text-success"><c:out value="${sessionScope.notiAdd}"></c:out></p>
                         <c:remove scope="session" var="notiAdd"></c:remove>
-                            <form action="DashboardController" method="post">
-                                <input type="hidden" value="add" name="addProduct">
+                        <form action="DashboardController" method="post" enctype="multipart/form-data">
+                                <input type="hidden" value="add" name="choice">
                                 <table>
                                     <tr>
                                         <td>Tên sản phẩm</td>
@@ -94,8 +94,11 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>Đường dẫn ảnh</td>
-                                    <td><input type="text" name="ProductImg" required</td>
+                                    <td>Chọn ảnh</td>
+                                    <td>
+                                        <label for="imgSelect" class="btn btn-light">Đường dẫn ảnh</label>
+                                        <input type="file" name="ProductImg" class="imgSelect" style="display: none;">
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>Giá tiền</td>
@@ -145,12 +148,14 @@
                             <c:forEach items="${pDAO.allProductWithMaterial}" var="item">
                                 <tr>
                                     <td>${item.getProductName()}</td>
-                                    <td><img src="${item.getImgSrc()}" style="height:200px; width: 100px; object-fit: cover; object-position: center;"</td>
+                                    <td><img src="data:image/jpg;base64,${item.getBase64Image()}" style="height:200px; width: 100px; object-fit: cover; object-position: center;"</td>
                                     <td>${item.getMaterial().getMaterialName()}</td>
                                     <td>${item.getProductPrice()}</td>
                                     <td>
-                                        <form id="deleteForm" action="DashboardController" method="post">
-                                            <input type="hidden" value="${item.getProductWithMaterialID()}" name="idDelete">
+                                        <form id="deleteForm" action="DashboardController" method="post" enctype="multipart/form-data">
+                                            <input type="hidden" value="delete" name="choice">
+                                            <input type="hidden" value="${item.getProductWithMaterialID()}" name="idProductWithMaterialDelete">
+                                            <input type="hidden" value ="${item.getProductID()}" name ="idProductDelete">
                                             <input type="submit" value="Xoá sản phẩm" onclick="return deleteConfirm()">
                                         </form>
                                     </td>
@@ -218,7 +223,7 @@
                                                     });
                                                 }
                                                 function deleteConfirm() {
-                                                    let result = confirm("You want to detele this student?");
+                                                    let result = confirm("Bạn có muốn xoá sản phẩm này?");
                                                     var formDelete = document.getElementById("deleteForm");
                                                     if (result) {
                                                         return formDelete.submit();

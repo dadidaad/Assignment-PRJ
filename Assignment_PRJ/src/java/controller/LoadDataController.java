@@ -4,6 +4,7 @@ import dao.ProductDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,6 +14,7 @@ import model.ProductWithMaterial;
  *
  * @author Admin
  */
+@MultipartConfig
 public class LoadDataController extends HttpServlet {
 
     /**
@@ -31,7 +33,7 @@ public class LoadDataController extends HttpServlet {
         String idProduct = request.getParameter("idProduct");
         ProductDAO db = new ProductDAO();
         ProductWithMaterial x = db.getProductMaterialByID(idProduct);
-        out.println("<form action=\"DashboardController\" method=\"post\"> <input type=\"hidden\" value=\"edit\" name=\"editProduct\">\n"
+        out.println("<form enctype=\"multipart/form-data\" action=\"DashboardController\" method=\"post\"> <input type=\"hidden\" value=\"edit\" name=\"choice\">\n"
                 + "                                    <table>\n"
                 + "                                        <tr>\n"
                 + "                                            <td>\n"
@@ -40,11 +42,20 @@ public class LoadDataController extends HttpServlet {
                 + "                                            <td><input type=\"text\" value = \"" + x.getDescription() + "\" name=\"DescEdit\" required></td>\n"
                 + "                                    </tr>\n"
                 + "                                    <tr>\n"
+                + "                                         <td>\n"
+                + "                                             Ảnh cũ\n"
+                + "                                         </td>\n"
+                + "                                         <td>\n"
+                + "                                             <img src=\"data:image/jpg;base64," + x.getBase64Image() + "\" width=\"100\" height=\"250\"/>\n"
+                + "                                         </td>\n"
+                + "                                    </tr>\n"
+                + "                                    <tr>\n"
                 + "                                        <td>\n"
-                + "                                            Đường dẫn ảnh\n"
+                + "                                            Đường dẫn ảnh mới\n"
                 + "                                        </td>\n"
                 + "                                        <td>\n"
-                + "                                            <input type=\"text\" value=\"" + x.getImgSrc() + "\" name=\"ImgEdit\" required>\n"
+                + "                                           <label for=\"imgSelect\" class=\"btn btn-light\">Đường dẫn ảnh</label>\n"
+                + "                                        <input type=\"file\" name=\"ImgEdit\" class=\"imgSelect\" style=\"display: none;\">"
                 + "                                        </td>\n"
                 + "                                    </tr>\n"
                 + "                                    <tr>\n"

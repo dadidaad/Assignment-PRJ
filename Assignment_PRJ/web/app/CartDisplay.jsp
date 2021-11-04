@@ -51,7 +51,7 @@
                                 <ul class="cart_list">
                                     <li class="cart_item clearfix">
                                         <% for (ProductToCart x : cartList) {%>
-                                        <div class="cart_item_image"><img src="<%=x.getProductWithMaterial().getImgSrc()%>" alt=""></div>
+                                        <div class="cart_item_image"><img src="data:image/jpg;base64,<%=x.getProductWithMaterial().getBase64Image()%>" alt=""></div>
                                         <div class="cart_item_info d-flex flex-md-row flex-column justify-content-between">
                                             <div class="cart_item_name cart_info_col">
                                                 <div class="cart_item_title">Tên</div>

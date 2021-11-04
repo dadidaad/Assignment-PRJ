@@ -4,16 +4,20 @@ import dao.ProductDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.Part;
 import model.ProductWithMaterial;
+import utils.DataHandle;
 
 /**
  *
  * @author Admin
  */
+@MultipartConfig
 public class DashboardController extends HttpServlet {
 
     /**
@@ -25,6 +29,7 @@ public class DashboardController extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    DataHandle dh = new DataHandle();
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -56,13 +61,11 @@ public class DashboardController extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void doPost_Edit(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8");
-        response.setContentType("text/html;charset=UTF-8");
-        String idproductMaterialEdit = request.getParameter("productWithMaterialIDedit");
-        String productPriceEdit = request.getParameter("priceEdit");
-        String productImgEdit = request.getParameter("ImgEdit");
-        String idProductEdit = request.getParameter("productIDedit");
-        String descEdit = request.getParameter("DescEdit");
+        String idproductMaterialEdit = dh.getValue(request.getPart("productWithMaterialIDedit"));
+        String productPriceEdit = dh.getValue(request.getPart("priceEdit"));
+        Part productImgEdit = request.getPart("ImgEdit");
+        String idProductEdit = dh.getValue(request.getPart("productIDedit"));
+        String descEdit = dh.getValue(request.getPart("DescEdit"));
         ProductDAO db = new ProductDAO();
         int result = db.updateProductWithMaterial(idproductMaterialEdit, productPriceEdit, productImgEdit);
         result = db.updateProduct(idProductEdit, descEdit);
@@ -72,14 +75,13 @@ public class DashboardController extends HttpServlet {
     }
 
     protected void doPost_Add(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8");
-        response.setContentType("text/html;charset=UTF-8");
-        String productNameAdd = request.getParameter("productName");
-        String productDescAdd = request.getParameter("descriptionProduct");
-        String productBrandAdd = request.getParameter("brandName");
-        String productImgAdd = request.getParameter("ProductImg");
-        String productPriceAdd = request.getParameter("productPrice");
-        String productMaterialAdd = request.getParameter("materialProduct");
+        
+        String productNameAdd = dh.getValue(request.getPart("productName"));
+        String productDescAdd = dh.getValue(request.getPart("descriptionProduct"));
+        String productBrandAdd = dh.getValue(request.getPart("brandName"));
+        Part productImgAdd = request.getPart("ProductImg");
+        String productPriceAdd = dh.getValue(request.getPart("productPrice"));
+        String productMaterialAdd = dh.getValue(request.getPart("materialProduct"));
         ProductDAO db = new ProductDAO();
         int result = db.insertProduct(productNameAdd, productDescAdd, Integer.parseInt(productBrandAdd));
         result = db.insertProductWithMaterial(db.getIDProductFromName(productNameAdd), productImgAdd, productPriceAdd, Integer.parseInt(productMaterialAdd));
@@ -89,9 +91,10 @@ public class DashboardController extends HttpServlet {
     }
     protected void doPost_Remove(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        String idRemove = request.getParameter("idDelete");
+        String idProductWithMaterial = dh.getValue(request.getPart("idProductWithMaterialDelete"));
+        String idProductDelete = dh.getValue(request.getPart("idProductDelete"));
         ProductDAO db = new ProductDAO();
-        int result = db.deleteProductWithMaterial(idRemove);
+        int result = db.deleteProductWithMaterial(idProductDelete, idProductWithMaterial);
         HttpSession session = request.getSession();
         session.setAttribute("notiDelete", "Xoá sản phẩm thành công");
         response.sendRedirect("Dashboard#remove");
@@ -100,14 +103,18 @@ public class DashboardController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        if (request.getParameter("addProduct") != null) {
+        String choice = dh.getValue(request.getPart("choice"));
+        if (choice.equalsIgnoreCase("add")) {
             doPost_Add(request, response);
+            return;
         }
-        if (request.getParameter("editProduct") != null) {
+        if (choice.equalsIgnoreCase("edit")) {
             doPost_Edit(request, response);
+            return;
         }
-        if (request.getParameter("idDelete") != null) {
+        if (choice.equalsIgnoreCase("delete")) {
             doPost_Remove(request, response);
+            return;
         }
     }
 
