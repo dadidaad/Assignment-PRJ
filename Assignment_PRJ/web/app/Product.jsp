@@ -54,7 +54,7 @@
                             <div class="product-option">
                                 <select name="select-option" class="selectItem" onchange="update(this.options[this.selectedIndex].value, '${myIndex.index}')">
                                     <c:forEach items="${product.getProductWithMaterial(productItem)}" var="productWithMaterial" varStatus="loop">
-                                        <option value = "${productWithMaterial.getProductPrice()},${productWithMaterial.getBase64Image()},${productWithMaterial.getProductWithMaterialID()}">${productWithMaterial.getMaterial().getMaterialName()}</option>
+                                        <option value = "${productWithMaterial.getProductPrice()},${productWithMaterial.getImageProduct()},${productWithMaterial.getProductWithMaterialID()}">${productWithMaterial.getMaterial().getMaterialName()}</option>
                                     </c:forEach>
                                 </select>
                                 <p id="ProductPrice${myIndex.index}" class="product-price">${product.getProductWithMaterial(productItem)[0].productPrice}</p>
@@ -77,7 +77,7 @@
                         </div>
                     </div>
                     <div class="product-img">
-                        <img id ="img${myIndex.index}" src="data:image/jpg;base64,${product.getProductWithMaterial(productItem)[0].getBase64Image()}" alt="">
+                        <img id ="img${myIndex.index}" src="file?path=${product.getProductWithMaterial(productItem)[0].getImageProduct()}" alt="">
                     </div>
                 </div>
             </c:forEach>
@@ -147,7 +147,7 @@
                 var splitValue = value.split(',');
                 var productPrice = document.getElementById('ProductPrice' + index);
                 productPrice.innerHTML = splitValue[0];
-                document.getElementById('img' + index).src = 'data:image/jpg;base64,'+splitValue[1];
+                document.getElementById('img' + index).src = 'file?path='+splitValue[1];
                 document.getElementById('addToCartProduct' + index).value = splitValue[2];
             }
             function insertQuantity(indexValue) {

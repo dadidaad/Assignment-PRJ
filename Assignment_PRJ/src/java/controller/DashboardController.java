@@ -1,8 +1,10 @@
 package controller;
 
 import dao.ProductDAO;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Paths;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
@@ -29,7 +31,10 @@ public class DashboardController extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    String savePath = "C:\\Users\\Admin\\Documents\\Assignment_PRJ\\temp";
+    File fileSaveDir = new File(savePath);
     DataHandle dh = new DataHandle();
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -45,7 +50,6 @@ public class DashboardController extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -67,7 +71,10 @@ public class DashboardController extends HttpServlet {
         String idProductEdit = dh.getValue(request.getPart("productIDedit"));
         String descEdit = dh.getValue(request.getPart("DescEdit"));
         ProductDAO db = new ProductDAO();
-        int result = db.updateProductWithMaterial(idproductMaterialEdit, productPriceEdit, productImgEdit);
+        String fileName = Paths.get(productImgEdit.getSubmittedFileName()).getFileName().toString();
+        String filePath = savePath + File.separator + fileName;
+        dh.copyFile(fileName, productImgEdit, savePath);
+        int result = db.updateProductWithMaterial(idproductMaterialEdit, productPriceEdit, filePath);
         result = db.updateProduct(idProductEdit, descEdit);
         HttpSession session = request.getSession();
         session.setAttribute("notiUpdate", "Sửa sản phẩm thành công");
@@ -75,7 +82,7 @@ public class DashboardController extends HttpServlet {
     }
 
     protected void doPost_Add(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        
+
         String productNameAdd = dh.getValue(request.getPart("productName"));
         String productDescAdd = dh.getValue(request.getPart("descriptionProduct"));
         String productBrandAdd = dh.getValue(request.getPart("brandName"));
@@ -83,12 +90,16 @@ public class DashboardController extends HttpServlet {
         String productPriceAdd = dh.getValue(request.getPart("productPrice"));
         String productMaterialAdd = dh.getValue(request.getPart("materialProduct"));
         ProductDAO db = new ProductDAO();
+        String fileName = Paths.get(productImgAdd.getSubmittedFileName()).getFileName().toString();
+        String filePath = savePath + File.separator + fileName;
+        dh.copyFile(fileName, productImgAdd, savePath);
         int result = db.insertProduct(productNameAdd, productDescAdd, Integer.parseInt(productBrandAdd));
-        result = db.insertProductWithMaterial(db.getIDProductFromName(productNameAdd), productImgAdd, productPriceAdd, Integer.parseInt(productMaterialAdd));
+        result = db.insertProductWithMaterial(db.getIDProductFromName(productNameAdd), filePath, productPriceAdd, Integer.parseInt(productMaterialAdd));
         HttpSession session = request.getSession();
         session.setAttribute("notiAdd", "Thêm sản phẩm thành công");
         response.sendRedirect("Dashboard#add");
     }
+
     protected void doPost_Remove(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         String idProductWithMaterial = dh.getValue(request.getPart("idProductWithMaterialDelete"));
@@ -99,6 +110,7 @@ public class DashboardController extends HttpServlet {
         session.setAttribute("notiDelete", "Xoá sản phẩm thành công");
         response.sendRedirect("Dashboard#remove");
     }
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

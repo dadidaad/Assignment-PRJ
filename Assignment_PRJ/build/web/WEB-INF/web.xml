@@ -101,6 +101,14 @@
         <servlet-name>LoadDataController</servlet-name>
         <servlet-class>controller.LoadDataController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>fileServlet</servlet-name>
+        <servlet-class>controller.FileServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>fileServlet</servlet-name>
+        <url-pattern>/file/*</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>Dashboard</servlet-name>
         <url-pattern>/Dashboard</url-pattern>

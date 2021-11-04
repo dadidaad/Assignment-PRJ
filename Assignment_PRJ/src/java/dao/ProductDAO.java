@@ -1,14 +1,11 @@
 package dao;
 
-import java.io.IOException;
-import java.sql.Blob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.http.Part;
 import model.Brand;
 import model.Material;
 import model.Product;
@@ -181,9 +178,7 @@ public class ProductDAO extends BaseDAO<Object> {
                 ProductWithMaterial productMaterial = new ProductWithMaterial();
                 productMaterial.setProductWithMaterialID(rs.getString("ProductWithMaterialID"));
                 productMaterial.setProductID(rs.getString("ProductID"));
-                Blob blob = rs.getBlob("ImageProduct");
-                String imageBase64 = dh.convertToBase64(blob);
-                productMaterial.setBase64Image(imageBase64);
+                productMaterial.setImageProduct(rs.getString("ImageProduct"));
                 productMaterial.setProductPrice(rs.getString("ProductPrice"));
                 Material material = new Material();
                 material.setMaterialID(rs.getString("MaterialID"));
@@ -211,9 +206,7 @@ public class ProductDAO extends BaseDAO<Object> {
                 productMaterial.setProductID(rs.getString("ProductID"));
                 productMaterial.setDescription(rs.getString("Description"));
                 productMaterial.setProductName(rs.getString("ProductName"));
-                Blob blob = rs.getBlob("ImageProduct");
-                String imageBase64 = dh.convertToBase64(blob);
-                productMaterial.setBase64Image(imageBase64);
+                productMaterial.setImageProduct(rs.getString("ImageProduct"));
                 productMaterial.setProductPrice(rs.getString("ProductPrice"));
                 Material material = new Material();
                 material.setMaterialID(rs.getString("MaterialID"));
@@ -241,9 +234,7 @@ public class ProductDAO extends BaseDAO<Object> {
                 x = new ProductWithMaterial();
                 x.setProductWithMaterialID(rs.getString("ProductWithMaterialID"));
                 x.setProductID(rs.getString("ProductID"));
-                Blob blob = rs.getBlob("ImageProduct");
-                String imageBase64 = dh.convertToBase64(blob);
-                x.setBase64Image(imageBase64);
+                x.setImageProduct(rs.getString("ImageProduct"));
                 x.setProductPrice(rs.getString("ProductPrice"));
                 x.setProductName(rs.getString("ProductName"));
                 x.setDescription(rs.getString("Description"));
@@ -320,18 +311,16 @@ public class ProductDAO extends BaseDAO<Object> {
         return result;
     }
 
-    public int updateProductWithMaterial(String id, String price, Part imgSrc) {
+    public int updateProductWithMaterial(String id, String price, String imgSrc) {
         String sql = "UPDATE dbo.ProductWithMaterial SET ImageProduct = ?, ProductPrice = ? WHERE ProductWithMaterialID = ?";
         int result = 0;
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setBlob(1, imgSrc.getInputStream());
+            statement.setString(1, imgSrc);
             statement.setString(2, price);
             statement.setString(3, id);
             result = statement.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
             Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return result;
@@ -381,7 +370,7 @@ public class ProductDAO extends BaseDAO<Object> {
         return result;
     }
 
-    public int insertProductWithMaterial(int idProduct, Part imgSrc, String productPrice, int MaterialID) {
+    public int insertProductWithMaterial(int idProduct, String imgSrc, String productPrice, int MaterialID) {
         String sql = "INSERT INTO dbo.ProductWithMaterial (\n"
                 + "	ProductID,\n"
                 + "	ImageProduct,\n"
@@ -396,13 +385,11 @@ public class ProductDAO extends BaseDAO<Object> {
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1, idProduct);
-            statement.setBlob(2, imgSrc.getInputStream());
+            statement.setString(2, imgSrc);
             statement.setString(3, productPrice);
             statement.setInt(4, MaterialID);
             result = statement.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
             Logger.getLogger(ProductDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return result;
@@ -426,7 +413,7 @@ public class ProductDAO extends BaseDAO<Object> {
                 x.setProductWithMaterialID(rs.getString("ProductWithMaterialID"));
                 x.setProductID(rs.getString("ProductID"));
                 x.setDescription(rs.getString("Description"));
-                x.setBase64Image(dh.convertToBase64(rs.getBlob("ImageProduct")));
+                x.setImageProduct(rs.getString("ImageProduct"));
                 x.setProductPrice(rs.getString("ProductPrice"));
                 x.setProductName(rs.getString("ProductName"));
                 Material material = new Material();

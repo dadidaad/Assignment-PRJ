@@ -96,8 +96,8 @@
                                 <tr>
                                     <td>Chọn ảnh</td>
                                     <td>
-                                        <label for="imgSelect" class="btn btn-light">Đường dẫn ảnh</label>
-                                        <input type="file" name="ProductImg" class="imgSelect" style="display: none;">
+                                        <label for="imgAdd" class="btn btn-light">Đường dẫn ảnh</label>
+                                        <input type="file" name="ProductImg" id="imgAdd" style="display: none;">
                                     </td>
                                 </tr>
                                 <tr>
@@ -148,7 +148,7 @@
                             <c:forEach items="${pDAO.allProductWithMaterial}" var="item">
                                 <tr>
                                     <td>${item.getProductName()}</td>
-                                    <td><img src="data:image/jpg;base64,${item.getBase64Image()}" style="height:200px; width: 100px; object-fit: cover; object-position: center;"</td>
+                                    <td><img src="file?path=${item.getImageProduct()}" style="height:200px; width: 100px; object-fit: cover; object-position: center;"</td>
                                     <td>${item.getMaterial().getMaterialName()}</td>
                                     <td>${item.getProductPrice()}</td>
                                     <td>

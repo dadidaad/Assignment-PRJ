@@ -128,7 +128,7 @@
                                     </div>
                                 </div>
                                 <div class="product-img">
-                                    <img src="data:image/jpg;base64,${productHot.getBase64Image()}" alt="">
+                                    <img src="file?path=${productHot.getImageProduct()}" alt="">
                                 </div>
                                 <div class="product-title">
                                     <h3>Sản phẩm hot</h3>
