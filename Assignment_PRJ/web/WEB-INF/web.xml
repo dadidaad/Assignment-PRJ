@@ -56,6 +56,11 @@
         <jsp-file>/admin/Dashboard.jsp</jsp-file>
         <!-- Your JSP. Must begin with '/' -->
     </servlet>
+    <servlet-mapping>
+        <servlet-name>Dashboard</servlet-name>
+        <url-pattern>/Dashboard</url-pattern>
+        <!-- Any URL you want here -->
+    </servlet-mapping>
     <servlet>
         <servlet-name>HomePage</servlet-name>
         <jsp-file>/app/index.jsp</jsp-file>
@@ -108,11 +113,6 @@
     <servlet-mapping>
         <servlet-name>fileServlet</servlet-name>
         <url-pattern>/file/*</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>Dashboard</servlet-name>
-        <url-pattern>/Dashboard</url-pattern>
-        <!-- Any URL you want here -->
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>HomePage</servlet-name>

@@ -38,6 +38,7 @@ public class BrandDAO extends BaseDAO<Object> {
         }
         return listBrandByCategory;
     }
+
     public ArrayList<Brand> getBrandByCategory(String id) {
         ArrayList<Brand> listBrandByCategory = new ArrayList<>();
         try {
@@ -100,24 +101,64 @@ public class BrandDAO extends BaseDAO<Object> {
         }
         return null;
     }
-    public ArrayList<Material> getAllMaterial(){
-        String sql = "SELECT * FROM dbo.Material";
-        ArrayList<Material> listMaterial = new ArrayList<>();
+
+    public String getBrandIDfromName(String name) {
+        String sql = "SELECT dbo.Brand.BrandID\n"
+                + "FROM dbo.Brand\n"
+                + "WHERE dbo.Brand.BrandName  = ?";
         try{
             PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, name);
             ResultSet rs = statement.executeQuery();
             while(rs.next()){
-                Material x= new Material();
+                int idBrand = rs.getInt("BrandID");
+                return String.valueOf(idBrand);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(BrandDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    public ArrayList<Material> getAllMaterial() {
+        String sql = "SELECT * FROM dbo.Material";
+        ArrayList<Material> listMaterial = new ArrayList<>();
+        try {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                Material x = new Material();
                 x.setMaterialID(rs.getString("MaterialID"));
                 x.setMaterialName(rs.getString("MaterialName"));
-                listMaterial.add(x);            }
+                listMaterial.add(x);
+            }
         } catch (SQLException ex) {
             Logger.getLogger(BrandDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return listMaterial;
     }
+
+    public int insertBrand(String brandName, String categoryID) {
+        String sql = "INSERT INTO dbo.Brand (\n"
+                + "	BrandName,\n"
+                + "	CategoryID\n"
+                + ") VALUES ( \n"
+                + "	?,\n"
+                + "	? ) ";
+        int result = 0;
+        try {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, brandName);
+            statement.setString(2, categoryID);
+            result = statement.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(BrandDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return result;
+    }
+
     public static void main(String[] args) {
         BrandDAO dao = new BrandDAO();
-        System.out.println(dao.getNameBrandAndCategoryByID("1"));
+        System.out.println(dao.getBrandIDfromName("Dream"));
     }
 }

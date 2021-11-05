@@ -63,6 +63,9 @@ public class DataHandle {
         return file;
     }
     public String getValue(Part part) throws IOException {
+        if(part == null){
+            return null;
+        }
         BufferedReader reader = new BufferedReader(new InputStreamReader(part.getInputStream(), "UTF-8"));
         StringBuilder value = new StringBuilder();
         char[] buffer = new char[1024];

@@ -85,47 +85,52 @@
                                     <tr>
                                         <td>Hãng</td>
                                         <td>
-                                            <select name="brandName">
+                                            <div id="brandOption">
+                                                <select name="brandName">
                                                 <option value="">Lựa chọn hãng</option>
                                             <c:forEach items="${bDAO.allBrand}" var="item">
                                                 <option value="${item.getBrandID()}">${item.getBrandName()}</option>
                                             </c:forEach>
-                                        </select>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Chọn ảnh</td>
-                                    <td>
-                                        <label for="imgAdd" class="btn btn-light">Đường dẫn ảnh</label>
-                                        <input type="file" name="ProductImg" id="imgAdd" style="display: none;">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Giá tiền</td>
-                                    <td><input type="number" name="productPrice" required></td>
-                                </tr>
-                                <tr>
-                                    <td>Chất liệu</td>
-                                    <td>
-                                        <select name="materialProduct">
-                                            <option value="">Lựa chọn chất liệu</option>
-                                            <c:forEach items="${bDAO.allMaterial}" var="item">
-                                                <option value="${item.getMaterialID()}">${item.getMaterialName()}</option>
-                                            </c:forEach>
-                                        </select>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><input type="submit" value="Xác nhận thêm"></td>
-                                </tr>
-                            </table>
-                        </form>
+                                                </select>   
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-dark" onclick="loadAddBrand('addBrand')" id="btn-add">Thêm hãng xe</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Chọn ảnh</td>
+                                        <td>
+                                            <label for="imgAdd" class="btn btn-light">Đường dẫn ảnh</label>
+                                            <input type="file" name="ProductImg" id="imgAdd" style="display: none;">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Giá tiền</td>
+                                        <td><input type="number" name="productPrice" required></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Chất liệu</td>
+                                        <td>
+                                            <select name="materialProduct">
+                                                <option value="">Lựa chọn chất liệu</option>
+                                                <c:forEach items="${bDAO.allMaterial}" var="item">
+                                                    <option value="${item.getMaterialID()}">${item.getMaterialName()}</option>
+                                                </c:forEach>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="submit" value="Xác nhận thêm"></td>
+                                    </tr>
+                                </table>
+                            </form>
                     </div>
                     <div class="content-dashboard container"  id="edit">
                         <h3>Sửa sản phẩm</h3>
                         <p class="text-success"><c:out value="${sessionScope.notiUpdate}"></c:out></p>
                         <c:remove scope="session" var="notiUpdate"></c:remove>
-                            <select name="choice" id="editChoice" onchange="loadData(this.options[this.selectedIndex].value)">
+                            <select name="choice" id="editChoice" onchange="loadEditTable(this.options[this.selectedIndex].value)">
                                 <option value="">Lựa chọn sản phẩm</option>
                             <c:forEach items="${pDAO.allProductWithMaterial}" var="product">
                                 <option value="${product.getProductWithMaterialID()}">${product.getProductName()} ${product.getMaterial().getMaterialName()}</option>
@@ -204,7 +209,27 @@
         <!-- Template Main JS File -->
         <script src="./assets/js/main.js"></script>
         <script>
-                                                function loadData(value) {
+                                                function loadAddBrand(value) {
+                                                    $.ajax({
+                                                        url: "${pageContext.request.contextPath}/LoadData",
+                                                        type: "get",
+                                                        data: {"addBrand": value},
+                                                        success: function (data) {
+                                                            if ($('#brandOption').is(':empty')) {
+                                                                $('#brandOption').append(data);
+                                                                $('#btn-add').hide();
+                                                            } else {
+                                                                $('#brandOption').empty();
+                                                                $('#brandOption').append(data);
+                                                                $('#btn-add').hide();
+                                                            }
+                                                        },
+                                                        error: function (xhr) {
+
+                                                        }
+                                                    });
+                                                }
+                                                 function loadEditTable(value) {
                                                     $.ajax({
                                                         url: "${pageContext.request.contextPath}/LoadData",
                                                         type: "get",

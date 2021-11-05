@@ -165,6 +165,7 @@
             </c:if>
             <c:remove var="notiBuy" scope="session" />
         </section>
+        <jsp:include page="app/footer.jsp"></jsp:include>
         <!-- Vendor JS Files -->
         <script src="./assets/vendor/aos/aos.js"></script>
         <script src="./assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>

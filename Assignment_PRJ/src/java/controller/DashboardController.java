@@ -1,5 +1,6 @@
 package controller;
 
+import dao.BrandDAO;
 import dao.ProductDAO;
 import java.io.File;
 import java.io.IOException;
@@ -85,7 +86,19 @@ public class DashboardController extends HttpServlet {
 
         String productNameAdd = dh.getValue(request.getPart("productName"));
         String productDescAdd = dh.getValue(request.getPart("descriptionProduct"));
-        String productBrandAdd = dh.getValue(request.getPart("brandName"));
+        String productBrandAdd = "";
+        if(dh.getValue(request.getPart("brandName")) != null){
+            productBrandAdd = dh.getValue(request.getPart("brandName"));
+        }
+        String categoryAdd ="";
+        if(dh.getValue(request.getPart("brandNameAdd")) != null){
+            productBrandAdd = dh.getValue(request.getPart("brandNameAdd"));
+            categoryAdd = dh.getValue(request.getPart("CategoryAdd"));
+            BrandDAO bDAO = new BrandDAO();
+            int rs = bDAO.insertBrand(productBrandAdd, categoryAdd);
+            String brandName = productBrandAdd;
+            productBrandAdd =  bDAO.getBrandIDfromName(brandName);
+        }
         Part productImgAdd = request.getPart("ProductImg");
         String productPriceAdd = dh.getValue(request.getPart("productPrice"));
         String productMaterialAdd = dh.getValue(request.getPart("materialProduct"));

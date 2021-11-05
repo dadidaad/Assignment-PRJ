@@ -30,43 +30,53 @@ public class LoadDataController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
-        String idProduct = request.getParameter("idProduct");
-        ProductDAO db = new ProductDAO();
-        ProductWithMaterial x = db.getProductMaterialByID(idProduct);
-        out.println("<form enctype=\"multipart/form-data\" action=\"DashboardController\" method=\"post\"> <input type=\"hidden\" value=\"edit\" name=\"choice\">\n"
-                + "                                    <table>\n"
-                + "                                        <tr>\n"
-                + "                                            <td>\n"
-                + "                                                Mô tả\n"
-                + "                                            </td>\n"
-                + "                                            <td><input type=\"text\" value = \"" + x.getDescription() + "\" name=\"DescEdit\" required></td>\n"
-                + "                                    </tr>\n"
-                + "                                    <tr>\n"
-                + "                                         <td>\n"
-                + "                                             Ảnh cũ\n"
-                + "                                         </td>\n"
-                + "                                         <td>\n"
-                + "                                             <img src=\"file?path=" + x.getImageProduct()+ "\" width=\"100\" height=\"250\"/>\n"
-                + "                                         </td>\n"
-                + "                                    </tr>\n"
-                + "                                    <tr>\n"
-                + "                                        <td>\n"
-                + "                                            Đường dẫn ảnh mới\n"
-                + "                                        </td>\n"
-                + "                                        <td>\n"
-                + "                                           <label for=\"imgEdit\" class=\"btn btn-light\">Đường dẫn ảnh</label>\n"
-                + "                                        <input type=\"file\" name=\"ImgEdit\" id=\"imgEdit\" style=\"display: none;\">"
-                + "                                        </td>\n"
-                + "                                    </tr>\n"
-                + "                                    <tr>\n"
-                + "                                        <td>Giá sản phẩm</td>\n"
-                + "                                        <td><input type=\"number\" value=\"" + x.getProductPrice() + "\" name=\"priceEdit\"></td>\n"
-                + "                                </table>\n"
-                + "                                <tr>\n"
-                + "                                    <td><input type=\"hidden\" value=\"" + x.getProductWithMaterialID() + "\" name = \"productWithMaterialIDedit\">" + "<input type=\"hidden\" value=\"" + x.getProductID() + "\" name = \"productIDedit\">"
-                + "                                          <input type=\"submit\" value=\"Chỉnh sửa\"></td>\n"
-                + "                                </tr>\n"
-                + "                            </form>");
+        if (request.getParameter("idProduct") != null) {
+            String idProduct = request.getParameter("idProduct");
+            ProductDAO db = new ProductDAO();
+            ProductWithMaterial x = db.getProductMaterialByID(idProduct);
+            out.println("<form enctype=\"multipart/form-data\" action=\"DashboardController\" method=\"post\"> <input type=\"hidden\" value=\"edit\" name=\"choice\">\n"
+                    + "                                    <table>\n"
+                    + "                                        <tr>\n"
+                    + "                                            <td>\n"
+                    + "                                                Mô tả\n"
+                    + "                                            </td>\n"
+                    + "                                            <td><input type=\"text\" value = \"" + x.getDescription() + "\" name=\"DescEdit\" required></td>\n"
+                    + "                                    </tr>\n"
+                    + "                                    <tr>\n"
+                    + "                                         <td>\n"
+                    + "                                             Ảnh cũ\n"
+                    + "                                         </td>\n"
+                    + "                                         <td>\n"
+                    + "                                             <img src=\"file?path=" + x.getImageProduct() + "\" width=\"150\" height=\"250\" style=\"object-fit:cover;\"/>\n"
+                    + "                                         </td>\n"
+                    + "                                    </tr>\n"
+                    + "                                    <tr>\n"
+                    + "                                        <td>\n"
+                    + "                                            Đường dẫn ảnh mới\n"
+                    + "                                        </td>\n"
+                    + "                                        <td>\n"
+                    + "                                           <label for=\"imgEdit\" class=\"btn btn-light\">Đường dẫn ảnh</label>\n"
+                    + "                                        <input type=\"file\" name=\"ImgEdit\" id=\"imgEdit\" style=\"display: none;\">"
+                    + "                                        </td>\n"
+                    + "                                    </tr>\n"
+                    + "                                    <tr>\n"
+                    + "                                        <td>Giá sản phẩm</td>\n"
+                    + "                                        <td><input type=\"number\" value=\"" + x.getProductPrice() + "\" name=\"priceEdit\"></td>\n"
+                    + "                                </table>\n"
+                    + "                                <tr>\n"
+                    + "                                    <td><input type=\"hidden\" value=\"" + x.getProductWithMaterialID() + "\" name = \"productWithMaterialIDedit\">" + "<input type=\"hidden\" value=\"" + x.getProductID() + "\" name = \"productIDedit\">"
+                    + "                                          <input type=\"submit\" value=\"Chỉnh sửa\"></td>\n"
+                    + "                                </tr>\n"
+                    + "                            </form>");
+        }
+        if (request.getParameter("addBrand") != null) {
+            out.println("<input type=\"text\" name=\"brandNameAdd\" placeholder=\"Nhập tên hãng xe mới\">\n"
+                    + "                                            <select name=\"CategoryAdd\">\n"
+                    + "                                                <option value=\"\">Lựa chọn dòng xe</option>\n"
+                    + "                                                <option value=\"1\">Xe ga</option>\n"
+                    + "                                                <option value=\"2\">Xe số</option>\n"
+                    + "                                            </select>");
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
